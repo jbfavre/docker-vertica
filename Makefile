@@ -21,28 +21,24 @@ build: build-7.2 build-7.1 build-7.0
 
 build-7.2:
 	docker build --rm=true -f Dockerfile.debian.7_7.2 \
-	             --build-arg VERTICA_PACKAGE=vertica_7.2.3-0_amd64.deb \
-	             -t jbfavre/vertica:7.2.3-0_debian-7 .
+	             -t jbfavre/vertica:7.2.3-1_debian-7 .
 	docker build --rm=true -f Dockerfile.ubuntu.14.04_7.2 \
-	             --build-arg VERTICA_PACKAGE=vertica_7.2.3-0_amd64.deb \
-	             -t jbfavre/vertica:7.2.3-0_ubuntu-14.04 .
+	             -t jbfavre/vertica:7.2.3-1_ubuntu-14.04 .
 	docker build --rm=true -f Dockerfile.centos.7_7.2 \
-	             --build-arg VERTICA_PACKAGE=vertica-7.2.3-0.x86_64.RHEL6.rpm \
-	             -t jbfavre/vertica:7.2.3-0_centos-7 .
+	             --build-arg VERTICA_PACKAGE=vertica-7.2.3-1.x86_64.RHEL6.rpm \
+	             -t jbfavre/vertica:7.2.3-1_centos-7 .
 	docker build --rm=true -f Dockerfile.centos.6_7.2 \
-	             --build-arg VERTICA_PACKAGE=vertica-7.2.3-0.x86_64.RHEL6.rpm \
-	             -t jbfavre/vertica:7.2.3-0_centos-6 .
+	             --build-arg VERTICA_PACKAGE=vertica-7.2.3-1.x86_64.RHEL6.rpm \
+	             -t jbfavre/vertica:7.2.3-1_centos-6 .
 
 build-7.1:
 	docker build --rm=true -f Dockerfile.debian.6_7.1 \
-	             --build-arg VERTICA_PACKAGE=vertica_7.1.2-17_amd64.deb \
-	             -t jbfavre/vertica:7.1.2-17_debian-6 .
+	             -t jbfavre/vertica:7.1.2-18_debian-6 .
 	docker build --rm=true -f Dockerfile.ubuntu.14.04_7.1 \
-	             --build-arg VERTICA_PACKAGE=vertica_7.1.2-17_amd64.deb \
-	             -t jbfavre/vertica:7.1.2-17_ubuntu-14.04 .
+	             -t jbfavre/vertica:7.1.2-18_ubuntu-14.04 .
 	docker build --rm=true -f Dockerfile.centos.5_7.1 \
-	             --build-arg VERTICA_PACKAGE=vertica-7.1.2-17.x86_64.RHEL5.rpm \
-	             -t jbfavre/vertica:7.1.2-17_centos-5 .
+	             --build-arg VERTICA_PACKAGE=vertica-7.1.2-18.x86_64.RHEL5.rpm \
+	             -t jbfavre/vertica:7.1.2-18_centos-5 .
 
 build-7.0:
 	docker build --rm=true -f Dockerfile.debian.6_7.0 \
