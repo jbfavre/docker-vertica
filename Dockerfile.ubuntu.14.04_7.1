@@ -1,16 +1,15 @@
 FROM ubuntu:14.04
 MAINTAINER Jean Baptiste Favre <docker@jbfavre.org>
 
-ARG VERTICA_PACKAGE="unknown"
-
 ENV SHELL "/bin/bash"
 ENV DEBIAN_FRONTEND noninteractive
 ENV TERM 1
 
-ADD packages/${VERTICA_PACKAGE} /tmp/
 ADD scripts/debian_cleaner.sh /tmp/
 
-RUN /usr/bin/apt-get update -yqq \
+RUN echo 'deb http://apt.jbfav.re/release/vertica71/ wheezy main'> /etc/apt/sources.list.d/vertica \
+ && /usr/bin/wget -O - http://apt.jbfav.re/release/key.gpg | /usr/bin/apt-key add - \
+ && /usr/bin/apt-get update -yqq \
  && /usr/bin/apt-get upgrade --no-install-recommends -yqq \
  && /usr/bin/apt-get install --no-install-recommends -yqq curl ca-certificates \
  && /usr/bin/chsh -s /bin/bash root \
@@ -26,10 +25,11 @@ RUN /usr/bin/apt-get update -yqq \
 
 ENV PYTHON_EGG_CACHE /tmp/.python-eggs
 
-RUN /usr/bin/dpkg -i /tmp/${VERTICA_PACKAGE} \
+RUN /usr/bin/apt-get install --no-install-recommends -yqq vertica \
  && /opt/vertica/sbin/install_vertica --license CE --accept-eula --hosts 127.0.0.1 --dba-user-password-disabled --failure-threshold NONE --no-system-configuration \
  && gosu dbadmin /opt/vertica/bin/admintools -t create_db -s localhost -d docker -c /home/dbadmin/docker/catalog -D /home/dbadmin/docker/data \
  && /usr/bin/apt-get remove --purge -y curl ca-certificates libpython2.7 \
+ && /bin/rm /etc/apt/sources.list.d/vertica && /usr/bin/apt-key del DB0AA004 \
  && /bin/bash /tmp/debian_cleaner.sh
 
 ENV VERTICADATA /home/dbadmin/docker
