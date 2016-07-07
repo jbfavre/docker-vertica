@@ -10,10 +10,12 @@ ADD scripts/debian_cleaner.sh /tmp/
 RUN echo "deb http://archive.debian.org/debian squeeze main" > /etc/apt/sources.list \
  && echo "deb http://archive.debian.org/debian squeeze-lts main" >> /etc/apt/sources.list \
  && echo "Acquire::Check-Valid-Until false;" > /etc/apt/apt.conf \
+ && echo "Acquire::ForceIPv4 true;" >> /etc/apt/apt.conf \
  && /usr/bin/apt-get update -yqq \
  && /usr/bin/apt-get upgrade --no-install-recommends -yqq \
  && /usr/bin/apt-get install --no-install-recommends -yqq curl ca-certificates\
- && echo 'deb http://apt.jbfav.re/release/vertica71/ wheezy main'> /etc/apt/sources.list.d/vertica \
+ && echo '192.168.42.53 apt.jbfav.re' >> /etc/hosts \
+ && echo 'deb http://apt.jbfav.re/release/vertica71/ squeeze main'> /etc/apt/sources.list.d/vertica.list \
  && /usr/bin/curl -SL http://apt.jbfav.re/release/key.gpg | /usr/bin/apt-key add - \
  && /usr/bin/apt-get update -yqq \
  && /usr/bin/chsh -s /bin/bash root \
@@ -33,11 +35,12 @@ RUN echo "deb http://archive.debian.org/debian squeeze main" > /etc/apt/sources.
 
 ENV PYTHON_EGG_CACHE /tmp/.python-eggs
 
-RUN /usr/bin/apt-get install --no-install-recommends -yqq vertica \
+RUN echo '192.168.42.53 apt.jbfav.re' >> /etc/hosts \
+ && /usr/bin/apt-get install --no-install-recommends -yqq vertica \
  && /opt/vertica/sbin/install_vertica --license CE --accept-eula --hosts 127.0.0.1 --dba-user-password-disabled --failure-threshold NONE --no-system-configuration \
  && gosu dbadmin /opt/vertica/bin/admintools -t create_db -s localhost -d docker -c /home/dbadmin/docker/catalog -D /home/dbadmin/docker/data \
  && /usr/bin/apt-get remove --purge -y curl ca-certificates \
- && /bin/rm /etc/apt/sources.list.d/vertica && /usr/bin/apt-key del DB0AA004 \
+ && /bin/rm /etc/apt/sources.list.d/vertica.list && /usr/bin/apt-key del DB0AA004 \
  && /bin/bash /tmp/debian_cleaner.sh
 
 ENV VERTICADATA /home/dbadmin/docker
