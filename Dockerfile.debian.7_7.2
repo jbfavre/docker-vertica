@@ -17,11 +17,9 @@ RUN /usr/bin/apt-get update -yqq \
  && /usr/bin/apt-get update -yqq \
  && /usr/bin/chsh -s /bin/bash root \
  && /bin/rm /bin/sh && ln -s /bin/bash /bin/sh \
- && /usr/bin/curl -o /usr/local/bin/gosu -SL 'https://github.com/tianon/gosu/releases/download/1.1/gosu' \
- && /bin/chmod +x /usr/local/bin/gosu \
  && /usr/sbin/groupadd -r verticadba \
  && /usr/sbin/useradd -r -m -s /bin/bash -g verticadba dbadmin \
- && /usr/local/bin/gosu dbadmin mkdir /tmp/.python-eggs \
+ && su - dbadmin -c 'mkdir /tmp/.python-eggs' \
  && /usr/bin/apt-get install locales \
  && /bin/echo "en_US ISO-8859-1" > /etc/locale.gen \
  && /bin/echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
@@ -32,7 +30,6 @@ RUN /usr/bin/apt-get update -yqq \
  && /usr/bin/apt-get install --no-install-recommends -yqq vertica \
  && /opt/vertica/sbin/install_vertica --license CE --accept-eula --hosts 127.0.0.1 \
                                       --dba-user-password-disabled --failure-threshold NONE --no-system-configuration \
- && gosu dbadmin /opt/vertica/bin/admintools -t create_db -s localhost -d docker -c /home/dbadmin/docker/catalog -D /home/dbadmin/docker/data \
  && /usr/bin/apt-get remove --purge -y curl ca-certificates libpython2.7 \
  && /bin/rm /etc/apt/sources.list.d/vertica.list \
  && /usr/bin/apt-key del DB0AA004 \
