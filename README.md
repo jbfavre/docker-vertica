@@ -2,13 +2,16 @@
 
 Docker images collection for Vertica database
 
-Vertica is a column oriented database from HPE.  
+Vertica is a column oriented database from HPE.
 It's available with both a free community licence, and an entreprise one.
 
 ## Flavours
 
 Following Vertica/Operating systems versions are provided:
 
+- Vertica 8.0.0
+  * on Ubuntu LTS 14.04
+  * on Centos 7
 - Vertica 7.2.3
   * on Debian Wheezy 7.10
   * on Ubuntu LTS 14.04
@@ -35,7 +38,7 @@ Or with persistent data store:
 
 ## How to fuild from Dockerfile
 
-You have to get relevant Vertica package from my.vertica.com (registration mandatory).  
+You have to get relevant Vertica package from my.vertica.com (registration mandatory).
 Save it in packages directory.
 
 Then, use following command:
