@@ -1,13 +1,20 @@
 
-push: push-7.2 push-7.1 push-7.0
+push: push-7.2 push-7.1 push-7.0 push-8.0
+
+push-8.0: build-8.0
+	docker tag jbfavre/vertica:8.0.0-3_debian-7 jbfavre/vertica:latest
+	docker push jbfavre/vertica:8.0.0-3_debian-7
+	docker push jbfavre/vertica:8.0.0-3_ubuntu-14.04
+	docker push jbfavre/vertica:8.0.0-3_centos-7
+	docker push jbfavre/vertica:8.0.0-3_centos-6
+	docker push jbfavre/vertica:latest
 
 push-7.2: build-7.2
-	docker tag jbfavre/vertica:7.2.3-3_debian-7 jbfavre/vertica:latest
+	docker tag jbfavre/vertica:7.2.3-3_debian-7
 	docker push jbfavre/vertica:7.2.3-3_debian-7
 	docker push jbfavre/vertica:7.2.3-3_ubuntu-14.04
 	docker push jbfavre/vertica:7.2.3-3_centos-7
 	docker push jbfavre/vertica:7.2.3-3_centos-6
-	docker push jbfavre/vertica:latest
 
 push-7.1: build-7.1
 	docker push jbfavre/vertica:7.1.2-19_debian-6
