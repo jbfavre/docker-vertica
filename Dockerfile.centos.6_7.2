@@ -27,5 +27,6 @@ ENV VERTICADATA /home/dbadmin/docker
 VOLUME /home/dbadmin/docker
 ENTRYPOINT ["/opt/vertica/bin/docker-entrypoint.sh"]
 ADD ./docker-entrypoint.sh /opt/vertica/bin/
+ADD ./install-vertica-ml.sh /opt/vertica/bin/
 
 EXPOSE 5433
