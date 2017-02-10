@@ -7,7 +7,9 @@ function shut_down() {
   vertica_proper_shutdown
   echo 'Saving configuration'
   mkdir -p ${VERTICADATA}/config
-  /bin/cp /opt/vertica/config/admintools.conf ${VERTICADATA}/config/admintools.conf
+  if [ -f "/opt/vertica/config/admintools.conf" ]; then
+    /bin/cp /opt/vertica/config/admintools.conf ${VERTICADATA}/config/admintools.conf
+  fi
 }
 
 function vertica_proper_shutdown() {
@@ -21,7 +23,9 @@ function vertica_proper_shutdown() {
 
 function fix_filesystem_permissions() {
   chown -R dbadmin:verticadba "${VERTICADATA}"
-  chown dbadmin:verticadba /opt/vertica/config/admintools.conf
+  if [ -f "/opt/vertica/config/admintools.conf" ]; then
+    chown dbadmin:verticadba /opt/vertica/config/admintools.conf
+  fi
 }
 
 trap "shut_down" SIGKILL SIGTERM SIGHUP SIGINT EXIT
@@ -35,7 +39,9 @@ if [ -z "$(ls -A "${VERTICADATA}")" ]; then
   su - dbadmin -c "/opt/vertica/bin/admintools -t create_db --skip-fs-checks -s localhost -d docker -c ${VERTICADATA}/catalog -D ${VERTICADATA}/data"
 else
   echo 'Restoring configuration'
-  cp ${VERTICADATA}/config/admintools.conf /opt/vertica/config/admintools.conf
+  if [ -f "${VERTICADATA}/config/admintools.conf" ]; then
+    cp ${VERTICADATA}/config/admintools.conf /opt/vertica/config/admintools.conf
+  fi
   echo 'Fixing filesystem permissions'
   fix_filesystem_permissions
   echo 'Starting Database'
