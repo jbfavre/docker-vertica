@@ -1,12 +1,17 @@
 
-push: push-7.2 push-7.1 push-7.0
+push: push-8.0 push-7.2 push-7.1 push-7.0
+
+push-8.0: build-8.0
+	docker tag jbfavre/vertica:8.0.1-1_minidebian-8 jbfavre/vertica:experimental
+	docker push jbfavre/vertica:8.0.1-1_minidebian-8
+	docker push jbfavre/vertica:experimental
 
 push-7.2: build-7.2
-	docker tag jbfavre/vertica:7.2.3-3_debian-7 jbfavre/vertica:latest
-	docker push jbfavre/vertica:7.2.3-3_debian-7
-	docker push jbfavre/vertica:7.2.3-3_ubuntu-14.04
-	docker push jbfavre/vertica:7.2.3-3_centos-7
-	docker push jbfavre/vertica:7.2.3-3_centos-6
+	docker tag jbfavre/vertica:7.2.3-15_debian-7 jbfavre/vertica:latest
+	docker push jbfavre/vertica:7.2.3-15_debian-7
+	docker push jbfavre/vertica:7.2.3-15_ubuntu-14.04
+	docker push jbfavre/vertica:7.2.3-15_centos-7
+	docker push jbfavre/vertica:7.2.3-15_centos-6
 	docker push jbfavre/vertica:latest
 
 push-7.1: build-7.1
@@ -19,19 +24,23 @@ push-7.0: build-7.0
 	docker push jbfavre/vertica:7.0.2-12_ubuntu-12.04
 	docker push jbfavre/vertica:7.0.2-12_centos-5
 
-build: build-7.2 build-7.1 build-7.0
+build: build-8.0 build-7.2 build-7.1 build-7.0
+
+build-8.0:
+	docker build --rm=true -f Dockerfile.minidebian.8_8.0 \
+                     -t jbfavre/vertica:8.0.1-1_minidebian-8 .
 
 build-7.2:
 	docker build --rm=true -f Dockerfile.debian.7_7.2 \
-	             -t jbfavre/vertica:7.2.3-3_debian-7 .
+	             -t jbfavre/vertica:7.2.3-15_debian-7 .
 	docker build --rm=true -f Dockerfile.ubuntu.14.04_7.2 \
-	             -t jbfavre/vertica:7.2.3-3_ubuntu-14.04 .
+	             -t jbfavre/vertica:7.2.3-15_ubuntu-14.04 .
 	docker build --rm=true -f Dockerfile.centos.7_7.2 \
-	             --build-arg VERTICA_PACKAGE=vertica-7.2.3-3.x86_64.RHEL6.rpm \
-	             -t jbfavre/vertica:7.2.3-3_centos-7 .
+	             --build-arg VERTICA_PACKAGE=vertica-7.2.3-15.x86_64.RHEL6.rpm \
+	             -t jbfavre/vertica:7.2.3-15_centos-7 .
 	docker build --rm=true -f Dockerfile.centos.6_7.2 \
-	             --build-arg VERTICA_PACKAGE=vertica-7.2.3-3.x86_64.RHEL6.rpm \
-	             -t jbfavre/vertica:7.2.3-3_centos-6 .
+	             --build-arg VERTICA_PACKAGE=vertica-7.2.3-15.x86_64.RHEL6.rpm \
+	             -t jbfavre/vertica:7.2.3-15_centos-6 .
 
 build-7.1:
 	docker build --rm=true -f Dockerfile.debian.6_7.1 \
