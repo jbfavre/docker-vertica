@@ -2,15 +2,15 @@
 push: push-8.1 push-8.0 push-7.2 push-7.1 push-7.0
 
 push-8.1: build-8.1
-	docker tag jbfavre/vertica:8.1.0-1_ubuntu-14.04 jbfavre/vertica:latest
 	docker push jbfavre/vertica:8.1.0-1_ubuntu-14.04
-	docker push jbfavre/vertica:latest
 
 push-8.0: build-8.0
 	docker tag jbfavre/vertica:8.0.1-1_minidebian-8 jbfavre/vertica:experimental
+	docker tag jbfavre/vertica:8.0.0-3_ubuntu-14.04 jbfavre/vertica:latest
 	docker push jbfavre/vertica:8.0.1-1_minidebian-8
         docker push jbfavre/vertica:8.0.0-3_ubuntu-14.04
 	docker push jbfavre/vertica:experimental
+	docker push jbfavre/vertica:latest
 
 push-7.2: build-7.2
 	docker push jbfavre/vertica:7.2.3-15_debian-7
