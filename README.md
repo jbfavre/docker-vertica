@@ -8,7 +8,10 @@ It's available with both a free community licence, and an entreprise one.
 ## Flavours
 
 Following Vertica/Operating systems versions are provided:
-
+- Vertica 8.1.0
+  * on Ubuntu LTS 14.04
+- Vertica 8.0.0
+  * on Ubuntu LTS 14.04
 - Vertica 7.2.3
   * on Debian Wheezy 7.10
   * on Ubuntu LTS 14.04
