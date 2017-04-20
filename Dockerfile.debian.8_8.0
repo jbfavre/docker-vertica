@@ -22,7 +22,6 @@ RUN /usr/bin/apt-get update -yqq \
  && su - dbadmin -c 'mkdir /tmp/.python-eggs' \
  && echo "dbadmin -       nice    0" >> /etc/security/limits.conf \
  && echo "dbadmin -       nofile  65536" >> /etc/security/limits.conf \
- && /usr/bin/apt-get install --no-install-recommends -yqq iproute2 \
  && /usr/bin/apt-get install --no-install-recommends -yqq vertica \
  && /bin/echo "en_US ISO-8859-1" > /etc/locale.gen \
  && /bin/echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
@@ -30,7 +29,7 @@ RUN /usr/bin/apt-get update -yqq \
  && /bin/sed -i "s/release_string = f.read.*/release_string = '8.5'/g"  /opt/vertica/oss/python/lib/python2.7/site-packages/vertica/system/opsys.py \
  && /opt/vertica/sbin/install_vertica --license CE --accept-eula --hosts 127.0.0.1 \
                                       --dba-user-password-disabled --failure-threshold NONE --no-system-configuration \
- && /usr/bin/apt-get remove --purge -y curl ca-certificates libpython2.7 libpython3.4 iproute2 \
+ && /usr/bin/apt-get remove --purge -y curl ca-certificates libpython2.7 libpython3.4 \
  && /bin/rm /etc/apt/sources.list.d/vertica.list \
  && /usr/bin/apt-key del DB0AA004 \
  && /bin/bash /tmp/debian_cleaner.sh
