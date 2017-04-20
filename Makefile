@@ -37,7 +37,6 @@ push-7.1: build-7.1
 	docker tag jbfavre/vertica:$(VERSION71)_debian-6 jbfavre/vertica:7.1
 	docker push jbfavre/vertica:$(VERSION71)_debian-6
 	docker push jbfavre/vertica:$(VERSION71)_ubuntu-14.04
-	docker push jbfavre/vertica:$(VERSION71)_centos-5
 	docker push jbfavre/vertica:7.1
 
 push-7.0: build-7.0
