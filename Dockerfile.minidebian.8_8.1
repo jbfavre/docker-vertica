@@ -12,7 +12,7 @@ RUN /usr/bin/apt-get update -yqq \
  && /usr/bin/apt-get upgrade --no-install-recommends -yqq \
  && /usr/bin/apt-get install --no-install-recommends -yqq curl ca-certificates \
  && echo '192.168.42.53 apt.jbfav.re' >> /etc/hosts \
- && echo 'deb http://apt.jbfav.re/release/vertica81/ wheezy main'> /etc/apt/sources.list.d/vertica.list \
+ && echo 'deb http://apt.jbfav.re/release/vertica81/ jessie main'> /etc/apt/sources.list.d/vertica.list \
  && /usr/bin/curl -SL http://apt.jbfav.re/release/key.gpg | /usr/bin/apt-key add - \
  && /usr/bin/apt-get update -yqq \
  && /usr/bin/chsh -s /bin/bash root \
