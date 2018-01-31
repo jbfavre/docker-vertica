@@ -18,8 +18,8 @@ RUN yum -q -y update \
  && yum install -y which mcelog gdb sysstat openssh-server openssh-clients iproute \
  && yum localinstall -q -y /tmp/${VERTICA_PACKAGE}
 
-RUN /opt/vertica/sbin/install_vertica --license CE --accept-eula --hosts 127.0.0.1 --dba-user-password-disabled --failure-threshold NONE --no-system-configuration \
- && gosu dbadmin /opt/vertica/bin/admintools -t create_db -s localhost -d docker -c /home/dbadmin/docker/catalog -D /home/dbadmin/docker/data \
+RUN /opt/vertica/sbin/install_vertica --license CE --accept-eula --hosts 127.0.0.1 \
+                                      --dba-user-password-disabled --failure-threshold NONE --no-system-configuration \
  && /bin/rm -f /tmp/vertica*
 
 ENV PYTHON_EGG_CACHE /tmp/.python-eggs
