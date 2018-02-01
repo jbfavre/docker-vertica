@@ -51,7 +51,7 @@ fi
 echo
 for f in /docker-entrypoint-initdb.d/*; do
         case "$f" in
-                #*.sh)     echo "$0: running $f"; . "$f" ;;
+                *.sh)     echo "$0: running $f"; . "$f" ;;
                 *.sql)    echo "$0: running $f"; su - dbadmin -c "/opt/vertica/bin/vsql -d docker -f $f"; echo ;;
                 *)        echo "$0: ignoring $f" ;;
         esac
