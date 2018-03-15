@@ -51,7 +51,7 @@ fi
 echo
 if [ -d /docker-entrypoint-initdb.d/ ]; then
   echo "Running entrypoint scripts ..."
-  for f in /docker-entrypoint-initdb.d/*; do
+  for f in $(ls /docker-entrypoint-initdb.d/* | sort); do
     case "$f" in
       *.sh)     echo "$0: running $f"; . "$f" ;;
       *.sql)    echo "$0: running $f"; su - dbadmin -c "/opt/vertica/bin/vsql -d docker -f $f"; echo ;;
