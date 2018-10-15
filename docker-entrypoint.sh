@@ -3,6 +3,9 @@ set -e
 
 STOP_LOOP="false"
 
+# if DATABASE_NAME is not provided use default one: "docker"
+export DATABASE_NAME="${DATABASE_NAME:-docker}"
+
 # Vertica should be shut down properly
 function shut_down() {
   echo "Shutting Down"
@@ -16,11 +19,11 @@ function shut_down() {
 
 function vertica_proper_shutdown() {
   echo 'Vertica: Closing active sessions'
-  /bin/su - dbadmin -c '/opt/vertica/bin/vsql -U dbadmin -d docker -c "SELECT CLOSE_ALL_SESSIONS();"'
+  /bin/su - dbadmin -c "/opt/vertica/bin/vsql -U dbadmin -d ${DATABASE_NAME} -c 'SELECT CLOSE_ALL_SESSIONS();'"
   echo 'Vertica: Flushing everything on disk'
-  /bin/su - dbadmin -c '/opt/vertica/bin/vsql -U dbadmin -d docker -c "SELECT MAKE_AHM_NOW();"'
+  /bin/su - dbadmin -c "/opt/vertica/bin/vsql -U dbadmin -d ${DATABASE_NAME} -c 'SELECT MAKE_AHM_NOW();'"
   echo 'Vertica: Stopping database'
-  /bin/su - dbadmin -c '/opt/vertica/bin/admintools -t stop_db -d docker -i'
+  /bin/su - dbadmin -c "/opt/vertica/bin/admintools -t stop_db -d ${DATABASE_NAME} -i"
 }
 
 function fix_filesystem_permissions() {
@@ -36,7 +39,7 @@ if [ -z "$(ls -A "${VERTICADATA}")" ]; then
   echo 'Fixing filesystem permissions'
   fix_filesystem_permissions
   echo 'Creating database'
-  su - dbadmin -c "/opt/vertica/bin/admintools -t create_db --skip-fs-checks -s localhost -d docker -c ${VERTICADATA}/catalog -D ${VERTICADATA}/data"
+  su - dbadmin -c "/opt/vertica/bin/admintools -t create_db --skip-fs-checks -s localhost -d ${DATABASE_NAME} -c ${VERTICADATA}/catalog -D ${VERTICADATA}/data"
 else
   if [ -f ${VERTICADATA}/config/admintools.conf ]; then
     echo 'Restoring configuration'
@@ -45,7 +48,7 @@ else
   echo 'Fixing filesystem permissions'
   fix_filesystem_permissions
   echo 'Starting Database'
-  su - dbadmin -c '/opt/vertica/bin/admintools -t start_db -d docker -i'
+  su - dbadmin -c "/opt/vertica/bin/admintools -t start_db -d ${DATABASE_NAME} -i"
 fi
 
 echo
@@ -54,7 +57,7 @@ if [ -d /docker-entrypoint-initdb.d/ ]; then
   for f in $(ls /docker-entrypoint-initdb.d/* | sort); do
     case "$f" in
       *.sh)     echo "$0: running $f"; . "$f" ;;
-      *.sql)    echo "$0: running $f"; su - dbadmin -c "/opt/vertica/bin/vsql -d docker -f $f"; echo ;;
+      *.sql)    echo "$0: running $f"; su - dbadmin -c "/opt/vertica/bin/vsql -d ${DATABASE_NAME} -f $f"; echo ;;
       *)        echo "$0: ignoring $f" ;;
     esac
    echo
