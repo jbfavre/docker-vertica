@@ -12,22 +12,21 @@ ADD scripts/debian_cleaner.sh /tmp/
 
 RUN /usr/bin/apt-get update -yqq \
  && /usr/bin/apt-get upgrade --no-install-recommends -yqq \
- && /usr/bin/apt-get install --no-install-recommends -yqq curl ca-certificates \
+ && /usr/bin/apt-get install --no-install-recommends -yqq curl ca-certificates locales \
  && /usr/bin/chsh -s /bin/bash root \
  && /bin/rm /bin/sh && ln -s /bin/bash /bin/sh \
- && /usr/bin/curl -o /usr/local/bin/gosu -SL 'https://github.com/tianon/gosu/releases/download/1.1/gosu' \
- && /bin/chmod +x /usr/local/bin/gosu \
  && /usr/sbin/groupadd -r verticadba \
  && /usr/sbin/useradd -r -m -s /bin/bash -g verticadba dbadmin \
- && /usr/local/bin/gosu dbadmin mkdir /tmp/.python-eggs \
+ && su - dbadmin -c 'mkdir /tmp/.python-eggs' \
  && /usr/sbin/locale-gen en_US en_US.UTF-8 \
  && /usr/sbin/dpkg-reconfigure locales \
- && /usr/bin/apt-get install --no-install-recommends -yqq openssh-server openssh-client mcelog sysstat dialog libexpat1 \
- && /usr/bin/dpkg -i /tmp/${VERTICA_PACKAGE}
+ && /usr/bin/apt-get install --no-install-recommends -yqq openssh-server openssh-client mcelog sysstat dialog \
+                             libexpat1 iproute2 \
+ && /usr/bin/dpkg -i /tmp/${VERTICA_PACKAGE} \
+ && rm /tmp/${VERTICA_PACKAGE}
 
 RUN /opt/vertica/sbin/install_vertica --license CE --accept-eula --hosts 127.0.0.1 \
-                                      --dba-user-password-disabled --failure-threshold NONE --no-system-configuration \
- && rm /tmp/vertica*.deb
+                                      --dba-user-password-disabled --failure-threshold NONE --no-system-configuration
 
 RUN /usr/bin/apt-get remove --purge -y curl ca-certificates libpython2.7 \
  && /bin/bash /tmp/debian_cleaner.sh

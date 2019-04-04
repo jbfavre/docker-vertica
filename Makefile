@@ -9,8 +9,7 @@ push-9.x: build-9.x
 	docker push jbfavre/vertica:$(VERSION9x)_debian-8
 	docker push jbfavre/vertica:$(VERSION9x)_ubuntu-16.04
 	docker push jbfavre/vertica:$(VERSION9x)_centos-7
-	docker push jbfavre/vertica:9.0
-	docker push jbfavre/vertica:experimental
+	docker push jbfavre/vertica:9.x
 	docker push jbfavre/vertica:latest
 
 build: build-9.x
