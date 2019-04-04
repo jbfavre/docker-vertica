@@ -1,4 +1,4 @@
-FROM ubuntu:14.04
+FROM ubuntu:16.04
 MAINTAINER Jean Baptiste Favre <docker@jbfavre.org>
 
 ARG VERTICA_PACKAGE="unknown"
@@ -23,10 +23,13 @@ RUN /usr/bin/apt-get update -yqq \
  && /usr/sbin/locale-gen en_US en_US.UTF-8 \
  && /usr/sbin/dpkg-reconfigure locales \
  && /usr/bin/apt-get install --no-install-recommends -yqq openssh-server openssh-client mcelog sysstat dialog libexpat1 \
- && /usr/bin/dpkg -i /tmp/${VERTICA_PACKAGE} \
- && /opt/vertica/sbin/install_vertica --license CE --accept-eula --hosts 127.0.0.1 \
+ && /usr/bin/dpkg -i /tmp/${VERTICA_PACKAGE}
+
+RUN /opt/vertica/sbin/install_vertica --license CE --accept-eula --hosts 127.0.0.1 \
                                       --dba-user-password-disabled --failure-threshold NONE --no-system-configuration \
- && /usr/bin/apt-get remove --purge -y curl ca-certificates libpython2.7 \
+ && rm /tmp/vertica*.deb
+
+RUN /usr/bin/apt-get remove --purge -y curl ca-certificates libpython2.7 \
  && /bin/bash /tmp/debian_cleaner.sh
 
 ENV PYTHON_EGG_CACHE /tmp/.python-eggs
