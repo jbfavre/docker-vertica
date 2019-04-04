@@ -1,20 +1,18 @@
 FROM debian:jessie
 MAINTAINER Jean Baptiste Favre <docker@jbfavre.org>
 
+ARG VERTICA_PACKAGE="unknown"
 
 ENV SHELL "/bin/bash"
 ENV DEBIAN_FRONTEND noninteractive
 ENV TERM 1
 
 ADD scripts/debian_cleaner.sh /tmp/
+ADD packages/${VERTICA_PACKAGE} /tmp/
 
 RUN /usr/bin/apt-get update -yqq \
  && /usr/bin/apt-get upgrade --no-install-recommends -yqq \
  && /usr/bin/apt-get install --no-install-recommends -yqq curl ca-certificates \
- && echo '192.168.42.53 apt.jbfav.re' >> /etc/hosts \
- && echo 'deb http://apt.jbfav.re/release/vertica90/ jessie main'> /etc/apt/sources.list.d/vertica.list \
- && /usr/bin/curl -SL http://apt.jbfav.re/release/key.gpg | /usr/bin/apt-key add - \
- && /usr/bin/apt-get update -yqq \
  && /usr/bin/chsh -s /bin/bash root \
  && /bin/rm /bin/sh && ln -s /bin/bash /bin/sh \
  && /usr/sbin/groupadd -r verticadba \
@@ -28,11 +26,10 @@ RUN /usr/bin/apt-get update -yqq \
  && echo "dbadmin -       nofile  65536" >> /etc/security/limits.conf \
  && /usr/bin/apt-get install --no-install-recommends -yqq openssh-server openssh-client mcelog sysstat dialog libexpat1 \
  && /usr/bin/apt-get install --no-install-recommends -yqq vertica \
- && /opt/vertica/sbin/install_vertica --license CE --accept-eula --hosts 127.0.0.1 \
+
+RUN /opt/vertica/sbin/install_vertica --license CE --accept-eula --hosts 127.0.0.1 \
                                       --dba-user-password-disabled --failure-threshold NONE --no-system-configuration \
  && /usr/bin/apt-get remove --purge -y curl ca-certificates libpython2.7 \
- && /bin/rm /etc/apt/sources.list.d/vertica.list \
- && /usr/bin/apt-key del DB0AA004 \
  && /bin/bash /tmp/debian_cleaner.sh
 
 ENV PYTHON_EGG_CACHE /tmp/.python-eggs

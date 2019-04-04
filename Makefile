@@ -4,8 +4,7 @@ VERSION9x = 9.2.0-6
 push: push-9.x
 
 push-9.x: build-9.x
-	docker tag jbfavre/vertica:$(VERSION9x)_minidebian-8 jbfavre/vertica:experimental
-	docker tag jbfavre/vertica:$(VERSION9x)_debian-8 jbfavre/vertica:9.0
+	docker tag jbfavre/vertica:$(VERSION9x)_debian-8 jbfavre/vertica:9.x
 	docker tag jbfavre/vertica:$(VERSION9x)_debian-8 jbfavre/vertica:latest
 	docker push jbfavre/vertica:$(VERSION9x)_debian-8
 	docker push jbfavre/vertica:$(VERSION9x)_ubuntu-14.04
@@ -17,14 +16,13 @@ push-9.x: build-9.x
 build: build-9.x
 
 build-9.x:
-	docker build --rm=true -f Dockerfile.minidebian.8_9.0 \
-                     -t jbfavre/vertica:$(VERSION9x)_minidebian-8 .
-	docker build --rm=true -f Dockerfile.debian.8_9.0 \
+	docker build --rm=true -f Dockerfile.debian.8_9.x \
+                     --build-arg VERTICA_PACKAGE=vertica_$(VERSION90)_amd64.deb \
                      -t jbfavre/vertica:$(VERSION9x)_debian-8 .
-	docker build --rm=true -f Dockerfile.ubuntu.14.04_9.0 \
+	docker build --rm=true -f Dockerfile.ubuntu.14.04_9.x \
                      --build-arg VERTICA_PACKAGE=vertica_$(VERSION90)_amd64.deb \
 	             -t jbfavre/vertica:$(VERSION9x)_ubuntu-14.04 .
-	docker build --rm=true -f Dockerfile.centos.7_9.0 \
+	docker build --rm=true -f Dockerfile.centos.7_9.x \
                      --build-arg VERTICA_PACKAGE=vertica-$(VERSION90).x86_64.RHEL6.rpm \
                      -t jbfavre/vertica:$(VERSION9x)_centos-7 .
 
