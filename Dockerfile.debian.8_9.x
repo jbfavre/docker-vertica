@@ -25,11 +25,13 @@ RUN /usr/bin/apt-get update -yqq \
  && echo "dbadmin -       nice    0" >> /etc/security/limits.conf \
  && echo "dbadmin -       nofile  65536" >> /etc/security/limits.conf \
  && /usr/bin/apt-get install --no-install-recommends -yqq openssh-server openssh-client mcelog sysstat dialog libexpat1 \
- && /usr/bin/apt-get install --no-install-recommends -yqq vertica \
+ && dpkg -i /tmp/vertica*.deb
 
 RUN /opt/vertica/sbin/install_vertica --license CE --accept-eula --hosts 127.0.0.1 \
                                       --dba-user-password-disabled --failure-threshold NONE --no-system-configuration \
- && /usr/bin/apt-get remove --purge -y curl ca-certificates libpython2.7 \
+ && rm /tmp/vertica*.deb
+
+RUN /usr/bin/apt-get remove --purge -y curl ca-certificates libpython2.7 \
  && /bin/bash /tmp/debian_cleaner.sh
 
 ENV PYTHON_EGG_CACHE /tmp/.python-eggs
