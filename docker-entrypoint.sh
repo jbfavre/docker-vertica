@@ -48,7 +48,7 @@ else
   echo 'Fixing filesystem permissions'
   fix_filesystem_permissions
   echo 'Starting Database'
-  su - dbadmin -c "/opt/vertica/bin/admintools -t start_db -d ${DATABASE_NAME} ${DBPW} -i"
+  su - dbadmin -c "/opt/vertica/bin/admintools -t start_db -d ${DATABASE_NAME} ${DBPW} --noprompts --timeout=never"
 fi
 
 echo
