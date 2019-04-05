@@ -8,28 +8,25 @@ It's available with both a free community licence, and an entreprise one.
 ## Flavours
 
 Following Vertica/Operating systems versions are provided:
-- Vertica 8.1.0
-  * on Ubuntu LTS 14.04
+- Vertica 9.x (currently 9.2)
+  * on Ubuntu LTS 16.04
   * on Debian 8.0 Jessie
   * on CentOS 7 (Thanks to @pcerny for the work)
-- Vertica 8.0.0
-  * on Ubuntu LTS 14.04
-  * on Debian 8.0 Jessie
 
 Support of Vertica 7.x has been removed since this version has been EOL for quite a time.
-Support of Vertica 9.x will be added as soon as possible.
+Support of Vertica 8.x has been removed because I'm lacking time to manage it.
 
 ## Usage
 
 You can use theses images without persistent data store:
 
-    docker run -p 5433:5433 jbfavre/vertica:8.1.1-11_debian-8
+    docker run -p 5433:5433 jbfavre/vertica:9.2.0-6_debian-8
 
 Or with persistent data store:
 
     docker run -p 5433:5433 -d \
                -v /path/to/vertica_data:/home/dbadmin/docker \
-               jbfavre/vertica:8.1.1-11_debian-8
+               jbfavre/vertica:9.2.0-6_debian-8
 
 ## How to fuild from Dockerfile
 
