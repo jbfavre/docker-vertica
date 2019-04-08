@@ -20,8 +20,7 @@ Following Vertica/Operating systems versions are provided:
   * on Debian 8.0 Jessie
   * on CentOS 7 (Thanks to @pcerny for the work)
 
-Support of Vertica 7.x has been removed since this version has been EOL for quite a time.
-Support of Vertica 8.x has been removed because I'm lacking time to manage it.
+__latest__ tag follow the Debian flavour of the image.
 
 ## Usage
 
