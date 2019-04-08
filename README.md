@@ -20,7 +20,7 @@ Following Vertica/Operating systems versions are provided:
   * on Debian 8.0 Jessie
   * on CentOS 7 (Thanks to @pcerny for the work)
 
-__latest__ tag follow the Debian flavour of the image.
+__latest__ tag follows the Debian flavour of the image.
 
 ## Usage
 
