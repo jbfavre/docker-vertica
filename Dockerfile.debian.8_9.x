@@ -23,12 +23,12 @@ RUN /usr/bin/apt-get update -yqq \
  && /usr/sbin/locale-gen \
  && echo "dbadmin -       nice    0" >> /etc/security/limits.conf \
  && echo "dbadmin -       nofile  65536" >> /etc/security/limits.conf \
- && /usr/bin/apt-get install --no-install-recommends -yqq openssh-server openssh-client mcelog sysstat dialog libexpat1 \
+ && /usr/bin/apt-get install --no-install-recommends -yqq openssh-server openssh-client mcelog sysstat dialog libexpat1 ntp \
  && /usr/bin/dpkg -i /tmp/${VERTICA_PACKAGE} \
  && rm /tmp/${VERTICA_PACKAGE}
 
 RUN /opt/vertica/sbin/install_vertica --license CE --accept-eula --hosts 127.0.0.1 \
-                                      --dba-user-password-disabled --failure-threshold NONE --no-system-configuration
+                                      --dba-user-password-disabled --failure-threshold NONE # --no-system-configuration
 
 RUN /usr/bin/apt-get remove --purge -y curl ca-certificates libpython2.7 \
  && /bin/bash /tmp/debian_cleaner.sh

@@ -15,12 +15,12 @@ RUN yum -q -y update \
  && /usr/sbin/groupadd -r verticadba \
  && /usr/sbin/useradd -r -m -s /bin/bash -g verticadba dbadmin \
  && /usr/local/bin/gosu dbadmin mkdir /tmp/.python-eggs \
- && yum install -y which mcelog gdb sysstat openssh-server openssh-clients iproute \
- && yum localinstall -q -y /tmp/${VERTICA_PACKAGE}
-
-RUN /opt/vertica/sbin/install_vertica --license CE --accept-eula --hosts 127.0.0.1 \
-                                      --dba-user-password-disabled --failure-threshold NONE --no-system-configuration \
+ && yum install -y which mcelog gdb sysstat openssh-server openssh-clients iproute ntp \
+ && yum localinstall -q -y /tmp/${VERTICA_PACKAGE} \
  && /bin/rm -f /tmp/vertica*
+
+RUN /opt/vertica/sbin/install_vertica --debug --license CE --accept-eula --hosts 127.0.0.1 \
+                                      --dba-user-password-disabled --failure-threshold NONE # --no-ssh-key-install # --no-system-configuration
 
 ENV PYTHON_EGG_CACHE /tmp/.python-eggs
 ENV VERTICADATA /home/dbadmin/docker
