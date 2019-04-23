@@ -28,7 +28,7 @@ RUN /usr/bin/apt-get update -yqq \
  && rm /tmp/${VERTICA_PACKAGE}
 
 RUN /opt/vertica/sbin/install_vertica --license CE --accept-eula --hosts 127.0.0.1 \
-                                      --dba-user-password-disabled --failure-threshold NONE # --no-system-configuration
+                                      --dba-user-password-disabled --failure-threshold NONE --no-system-configuration
 
 RUN /usr/bin/apt-get remove --purge -y curl ca-certificates libpython2.7 \
  && /bin/bash /tmp/debian_cleaner.sh

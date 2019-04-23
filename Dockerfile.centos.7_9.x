@@ -20,7 +20,7 @@ RUN yum -q -y update \
  && /bin/rm -f /tmp/vertica*
 
 RUN /opt/vertica/sbin/install_vertica --debug --license CE --accept-eula --hosts 127.0.0.1 \
-                                      --dba-user-password-disabled --failure-threshold NONE # --no-ssh-key-install # --no-system-configuration
+                                      --dba-user-password-disabled --failure-threshold NONE --no-system-configuration
 
 ENV PYTHON_EGG_CACHE /tmp/.python-eggs
 ENV VERTICADATA /home/dbadmin/docker
