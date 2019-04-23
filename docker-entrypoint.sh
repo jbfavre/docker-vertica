@@ -35,16 +35,14 @@ trap "shut_down" SIGKILL SIGTERM SIGHUP SIGINT
 
 
 echo 'Starting up'
-if [ -z "$(ls -A "${VERTICADATA}")" ]; then
+if [ ! -f ${VERTICADATA}/config/admintools.conf ]; then
   echo 'Fixing filesystem permissions'
   fix_filesystem_permissions
   echo 'Creating database'
   su - dbadmin -c "/opt/vertica/bin/admintools -t create_db --skip-fs-checks -s localhost -d ${DATABASE_NAME} -c ${VERTICADATA}/catalog -D ${VERTICADATA}/data"
 else
-  if [ -f ${VERTICADATA}/config/admintools.conf ]; then
-    echo 'Restoring configuration'
-    cp ${VERTICADATA}/config/admintools.conf /opt/vertica/config/admintools.conf
-  fi
+  echo 'Restoring configuration'
+  cp ${VERTICADATA}/config/admintools.conf /opt/vertica/config/admintools.conf
   echo 'Fixing filesystem permissions'
   fix_filesystem_permissions
   echo 'Starting Database'
