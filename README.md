@@ -1,9 +1,9 @@
-# docker images for HPE Vertica
+# docker images for Micro Focus Vertica
 
 Docker images collection for Vertica database
 
-Vertica is a column oriented database from HPE.  
-It's available with both a free community licence, and an entreprise one.
+Vertica is a column oriented database from Micro Focus.  
+It's available with both a free community licence, and an enterprise one.
 
 ## News
 
@@ -24,7 +24,7 @@ __latest__ tag follows the Debian flavour of the image.
 
 ## Usage
 
-You can use theses images without persistent data store:
+You can use the image without persistent data store:
 
     docker run -p 5433:5433 jbfavre/vertica:9.2.0-6_debian-8
 
@@ -34,7 +34,11 @@ Or with persistent data store:
                -v /path/to/vertica_data:/home/dbadmin/docker \
                jbfavre/vertica:9.2.0-6_debian-8
 
-## How to fuild from Dockerfile
+Or with custom database name (default is "docker") or database password (default is no password):
+
+    docker run -p 5433:5433 -e DATABASE_NAME='notdocker' -e DATABASE_PASSWORD='foo123' jbfavre/vertica:9.2.0-6_debian-8
+
+## How to build from Dockerfile
 
 You have to get relevant Vertica package from my.vertica.com (registration mandatory).  
 Save it in packages directory.
@@ -42,7 +46,7 @@ Save it in packages directory.
 Then, use following command:
 
     docker build -f Dockerfile.<OS_codename>.<OS_version>_<Vertica_version> \
-                 --build-arg VERTICA_PACKAGE=vertica_<Vertica_version>_amd64.deb \
+                 --build-arg VERTICA_PACKAGE=<vertica_package_name_matching_OS.deb/.rpm> \
                  -t jbfavre/vertica:<Vertica_version>_<OS_codename>-<OS_version> .
 
 Or have a look into `Makefile`.
