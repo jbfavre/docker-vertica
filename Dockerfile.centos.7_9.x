@@ -27,5 +27,6 @@ ENV VERTICADATA /home/dbadmin/docker
 VOLUME /home/dbadmin/docker
 ENTRYPOINT ["/opt/vertica/bin/docker-entrypoint.sh"]
 ADD ./docker-entrypoint.sh /opt/vertica/bin/
+RUN chmod a+x /opt/vertica/bin/docker-entrypoint.sh
 
 EXPOSE 5433
