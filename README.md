@@ -26,17 +26,17 @@ __latest__ tag follows the Debian flavour of the image.
 
 You can use the image without persistent data store:
 
-    docker run -p 5433:5433 jbfavre/vertica:9.2.0-6_debian-8
+    docker run -p 5433:5433 jbfavre/vertica:9.2.0-7_debian-8
 
 Or with persistent data store:
 
     docker run -p 5433:5433 -d \
                -v /path/to/vertica_data:/home/dbadmin/docker \
-               jbfavre/vertica:9.2.0-6_debian-8
+               jbfavre/vertica:9.2.0-7_debian-8
 
 Or with custom database name (default is "docker") or database password (default is no password):
 
-    docker run -p 5433:5433 -e DATABASE_NAME='notdocker' -e DATABASE_PASSWORD='foo123' jbfavre/vertica:9.2.0-6_debian-8
+    docker run -p 5433:5433 -e DATABASE_NAME='notdocker' -e DATABASE_PASSWORD='foo123' jbfavre/vertica:9.2.0-7_debian-8
 
 ## How to build from Dockerfile
 
