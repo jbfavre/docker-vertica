@@ -18,7 +18,7 @@ RUN yum -q -y update \
  && yum install -y which mcelog gdb sysstat openssh-server openssh-clients iproute ntp \
  && yum localinstall -q -y /tmp/${VERTICA_PACKAGE} \
  && yum clean all \
- && /bin/rm -f /tmp/vertica* /var/cache/*
+ && /bin/rm -rf /tmp/vertica* /var/cache/yum
 
 RUN /opt/vertica/sbin/install_vertica --debug --license CE --accept-eula --hosts 127.0.0.1 \
                                       --dba-user-password-disabled --failure-threshold NONE --no-system-configuration
