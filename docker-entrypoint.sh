@@ -57,7 +57,7 @@ if [ -d /docker-entrypoint-initdb.d/ ]; then
   for f in $(ls /docker-entrypoint-initdb.d/* | sort); do
     case "$f" in
       *.sh)     echo "$0: running $f"; . "$f" ;;
-      *.sql)    echo "$0: running $f"; su - dbadmin -c "/opt/vertica/bin/vsql -d ${DATABASE_NAME} ${DBPW} -f $f"; echo ;;
+      *.sql)    echo "$0: running $f"; su - dbadmin -c "/opt/vertica/bin/vsql -d ${DATABASE_NAME} ${VSQLPW}  -f $f"; echo ;;
       *)        echo "$0: ignoring $f" ;;
     esac
    echo
