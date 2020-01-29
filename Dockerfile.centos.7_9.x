@@ -17,7 +17,8 @@ RUN yum -q -y update \
  && /usr/local/bin/gosu dbadmin mkdir /tmp/.python-eggs \
  && yum install -y which mcelog gdb sysstat openssh-server openssh-clients iproute ntp \
  && yum localinstall -q -y /tmp/${VERTICA_PACKAGE} \
- && /bin/rm -f /tmp/vertica*
+ && yum clean all \
+ && /bin/rm -f /tmp/vertica* /var/cache/*
 
 RUN /opt/vertica/sbin/install_vertica --debug --license CE --accept-eula --hosts 127.0.0.1 \
                                       --dba-user-password-disabled --failure-threshold NONE --no-system-configuration
