@@ -15,7 +15,7 @@ Following Vertica/Operating systems versions are provided:
 
 You can use the image without persistent data store:
 
-    docker run -p 5433:5433 adgear/centos7-vertica92:9.2.0_centos-7
+    docker run -p 5433:5433 adgear/centos7-vertica92:9.2.0-0_centos-7
 
 Or with persistent data store:
 
@@ -25,7 +25,7 @@ Or with persistent data store:
 
 Or with custom database name (default is "docker") or database password (default is no password):
 
-    docker run -p 5433:5433 -e DATABASE_NAME='notdocker' -e DATABASE_PASSWORD='foo123' adgear/centos7-vertica92:9.2.0_centos-7
+    docker run -p 5433:5433 -e DATABASE_NAME='notdocker' -e DATABASE_PASSWORD='foo123' adgear/centos7-vertica92:9.2.0-0_centos-7
 
 ## How to build from Dockerfile
 

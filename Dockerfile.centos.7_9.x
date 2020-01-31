@@ -1,5 +1,4 @@
 FROM centos:centos7
-MAINTAINER Jean Baptiste Favre <docker@jbfavre.org>
 
 ARG VERTICA_PACKAGE="unknown"
 

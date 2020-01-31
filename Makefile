@@ -1,5 +1,5 @@
 
-VERSION9x = 9.2.0
+VERSION9x = 9.2.0-0
 
 build: build-9.x
 
