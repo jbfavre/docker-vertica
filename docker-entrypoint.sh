@@ -1,27 +1,118 @@
 #!/bin/bash
 set -e
 
+STOP_LOOP="false"
+
+# if DATABASE_NAME is not provided use default one: "docker"
+export DATABASE_NAME="${DATABASE_NAME:-docker}"
+export DATABASE_TIMEOUT="${DATABASE_TIMEOUT:-300}"
+# if DATABASE_PASSWORD is provided, use it as DB password, otherwise empty password
+if [ -n "$DATABASE_PASSWORD" ]; then export DBPW="-p $DATABASE_PASSWORD" VSQLPW="-w $DATABASE_PASSWORD"; else export DBPW="" VSQLPW=""; fi
+
 # Vertica should be shut down properly
 function shut_down() {
-  echo "Shutting Down"
-  gosu dbadmin /opt/vertica/bin/admintools -t stop_db -d docker -i
-  exit
+	echo "Shutting Down"
+	vertica_proper_shutdown
+	echo 'Saving configuration'
+	mkdir -p "${VERTICADATA}"/config
+	/bin/cp -vf /opt/vertica/config/admintools.conf "${VERTICADATA}"/config/admintools.conf
+	echo 'Stopping loop'
+	STOP_LOOP="true"
 }
 
-trap "shut_down" SIGKILL SIGTERM SIGHUP SIGINT EXIT
+function vertica_proper_shutdown() {
+  echo 'Vertica: Closing active sessions'
+  /bin/su - dbadmin -c "/opt/vertica/bin/vsql -U dbadmin -d ${DATABASE_NAME} ${VSQLPW} -c 'SELECT CLOSE_ALL_SESSIONS();'"
+  echo 'Vertica: Flushing everything on disk'
+  /bin/su - dbadmin -c "/opt/vertica/bin/vsql -U dbadmin -d ${DATABASE_NAME} ${VSQLPW} -c 'SELECT MAKE_AHM_NOW();'"
+  echo 'Vertica: Stopping database'
+  /bin/su - dbadmin -c "/opt/vertica/bin/admintools -t stop_db ${DBPW} -d ${DATABASE_NAME} -i"
+}
 
-chown -R dbadmin:verticadba "$VERTICADATA"
+function fix_filesystem_permissions() {
+  chown -R dbadmin:verticadba "${VERTICADATA}"
+  chown dbadmin:verticadba /opt/vertica/config/admintools.conf
+}
 
-if [ -z "$(ls -A "$VERTICADATA")" ]; then
-  echo "Creating database"
-  gosu dbadmin /opt/vertica/bin/admintools -t drop_db -d docker
-  gosu dbadmin /opt/vertica/bin/admintools -t create_db -s localhost -d docker -c /home/dbadmin/docker/catalog -D /home/dbadmin/docker/data
-else
-  gosu dbadmin /opt/vertica/bin/admintools -t start_db -d docker -i
+function containsElement() {
+	local e match="$1"
+	shift
+	for e; do [[ "$e" == "$match" ]] && return 0; done
+	return 1
+}
+
+trap "shut_down" SIGTERM SIGHUP SIGINT
+
+echo 'Starting up'
+
+echo 'check if database exit'
+
+# this info was get from admintools.conf
+# so that file must be persistent
+if [[ -f "${VERTICADATA}"/config/admintools.conf ]];then
+	echo 'Restoring configuration'
+	/bin/cp -vf "${VERTICADATA}"/config/admintools.conf /opt/vertica/config/admintools.conf
+fi	
+
+databases=$(su - dbadmin -c "/opt/vertica/bin/admintools -t db_status -s ALL")
+IFS=', ' read -r -a database_array <<< "$databases"
+
+if ! containsElement "$DATABASE_NAME" "${database_array[@]}"; then
+	echo "database with name [$DATABASE_NAME] not exist"
+	echo 'Fixing filesystem permissions'
+	fix_filesystem_permissions
+	echo 'Creating database'
+	# if you delete admintools.conf but data still exist
+	# thi will give "Catalog parent directory already exists" error
+	su - dbadmin -c "/opt/vertica/bin/admintools -t create_db --skip-fs-checks -s localhost -d ${DATABASE_NAME} ${DBPW} -c ${VERTICADATA}/catalog -D ${VERTICADATA}/data"
+	echo "Backup  configuration"
+	mkdir -p "${VERTICADATA}"/config
+	/bin/cp -vf /opt/vertica/config/admintools.conf "${VERTICADATA}"/config/admintools.conf
+	/opt/vertica/sbin/vertica_agent start
+else	
+	echo 'Fixing filesystem permissions'
+	fix_filesystem_permissions
+	echo 'Starting Database'
+	su - dbadmin -c "/opt/vertica/bin/admintools -t start_db -d ${DATABASE_NAME} ${DBPW} --noprompts --timeout=${DATABASE_TIMEOUT}" || true # use true to ignore error
+	# check if start success
+	databases=$(su - dbadmin -c "/opt/vertica/bin/admintools -t db_status -s UP")
+	IFS=', ' read -r -a database_array <<< "$databases"
+	if ! containsElement "$DATABASE_NAME" "${database_array[@]}"; then
+		# start failed , may because the wos problem
+		echo "recovery database"
+		su - dbadmin -c "/opt/vertica/bin/admintools -t restart_db  -e 'last' -d ${DATABASE_NAME} ${DBPW} --noprompts --timeout=${DATABASE_TIMEOUT}"
+	fi
+	/opt/vertica/sbin/vertica_agent start
+fi
+
+echo
+if [ -d /docker-entrypoint-initdb.d/ ]; then
+	echo "Running entrypoint scripts ..."
+	for f in $(find /docker-entrypoint-initdb.d/ | sort); do
+		case "$f" in
+		*.sh)
+			echo "$0: running $f"
+			."$f"
+			;;
+		*.sql)
+			echo "$0: running $f"
+			su - dbadmin -c "/opt/vertica/bin/vsql -d ${DATABASE_NAME} ${DBPW} -f $f"
+			echo
+			;;
+		*) echo "$0: ignoring $f" ;;
+		esac
+		echo
+	done
 fi
 
 echo "Vertica is now running"
 
-while true; do
-  sleep 1
+while [ "${STOP_LOOP}" == "false" ]; do
+	sleep 5
+	down_db=$(su - dbadmin -c "/opt/vertica/bin/admintools -t db_status -s DOWN")
+	IFS=', ' read -r -a db_array <<< "$down_db"
+	if containsElement "$DATABASE_NAME" "${db_array[@]}"; then
+		echo "database $DATABASE_NAME is already stop, exit"
+		shut_down
+	fi
 done
