@@ -86,15 +86,22 @@ fi
 
 echo
 if [ -d /docker-entrypoint-initdb.d/ ]; then
-  echo "Running entrypoint scripts ..."
-  for f in $(ls /docker-entrypoint-initdb.d/* | sort); do
-    case "$f" in
-      *.sh)     echo "$0: running $f"; . "$f" ;;
-      *.sql)    echo "$0: running $f"; su - dbadmin -c "/opt/vertica/bin/vsql -d ${DATABASE_NAME} ${VSQLPW}  -f $f"; echo ;;
-      *)        echo "$0: ignoring $f" ;;
-    esac
-   echo
-  done
+	echo "Running entrypoint scripts ..."
+	for f in $(find /docker-entrypoint-initdb.d/ | sort); do
+		case "$f" in
+		*.sh)
+			echo "$0: running $f"
+			."$f"
+			;;
+		*.sql)
+			echo "$0: running $f"
+			su - dbadmin -c "/opt/vertica/bin/vsql -d ${DATABASE_NAME} ${DBPW} -f $f"
+			echo
+			;;
+		*) echo "$0: ignoring $f" ;;
+		esac
+		echo
+	done
 fi
 
 echo "Vertica is now running"
