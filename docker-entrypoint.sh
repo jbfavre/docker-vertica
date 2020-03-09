@@ -42,20 +42,46 @@ function containsElement() {
 
 trap "shut_down" SIGTERM SIGHUP SIGINT
 
-
 echo 'Starting up'
-if [ ! -f ${VERTICADATA}/config/admintools.conf ]; then
-  echo 'Fixing filesystem permissions'
-  fix_filesystem_permissions
-  echo 'Creating database'
-  su - dbadmin -c "/opt/vertica/bin/admintools -t create_db --skip-fs-checks -s localhost -d ${DATABASE_NAME} ${DBPW} -c ${VERTICADATA}/catalog -D ${VERTICADATA}/data"
-else
-  echo 'Restoring configuration'
-  cp ${VERTICADATA}/config/admintools.conf /opt/vertica/config/admintools.conf
-  echo 'Fixing filesystem permissions'
-  fix_filesystem_permissions
-  echo 'Starting Database'
-  su - dbadmin -c "/opt/vertica/bin/admintools -t start_db -d ${DATABASE_NAME} ${DBPW} --noprompts --timeout=never"
+
+echo 'check if database exit'
+
+# this info was get from admintools.conf
+# so that file must be persistent
+if [[ -f "${VERTICADATA}"/config/admintools.conf ]];then
+	echo 'Restoring configuration'
+	/bin/cp -vf "${VERTICADATA}"/config/admintools.conf /opt/vertica/config/admintools.conf
+fi	
+
+databases=$(su - dbadmin -c "/opt/vertica/bin/admintools -t db_status -s ALL")
+IFS=', ' read -r -a database_array <<< "$databases"
+
+if ! containsElement "$DATABASE_NAME" "${database_array[@]}"; then
+	echo "database with name [$DATABASE_NAME] not exist"
+	echo 'Fixing filesystem permissions'
+	fix_filesystem_permissions
+	echo 'Creating database'
+	# if you delete admintools.conf but data still exist
+	# thi will give "Catalog parent directory already exists" error
+	su - dbadmin -c "/opt/vertica/bin/admintools -t create_db --skip-fs-checks -s localhost -d ${DATABASE_NAME} ${DBPW} -c ${VERTICADATA}/catalog -D ${VERTICADATA}/data"
+	echo "Backup  configuration"
+	mkdir -p "${VERTICADATA}"/config
+	/bin/cp -vf /opt/vertica/config/admintools.conf "${VERTICADATA}"/config/admintools.conf
+	/opt/vertica/sbin/vertica_agent start
+else	
+	echo 'Fixing filesystem permissions'
+	fix_filesystem_permissions
+	echo 'Starting Database'
+	su - dbadmin -c "/opt/vertica/bin/admintools -t start_db -d ${DATABASE_NAME} ${DBPW} --noprompts --timeout=${DATABASE_TIMEOUT}" || true # use true to ignore error
+	# check if start success
+	databases=$(su - dbadmin -c "/opt/vertica/bin/admintools -t db_status -s UP")
+	IFS=', ' read -r -a database_array <<< "$databases"
+	if ! containsElement "$DATABASE_NAME" "${database_array[@]}"; then
+		# start failed , may because the wos problem
+		echo "recovery database"
+		su - dbadmin -c "/opt/vertica/bin/admintools -t restart_db  -e 'last' -d ${DATABASE_NAME} ${DBPW} --noprompts --timeout=${DATABASE_TIMEOUT}"
+	fi
+	/opt/vertica/sbin/vertica_agent start
 fi
 
 echo
