@@ -33,7 +33,14 @@ function fix_filesystem_permissions() {
   chown dbadmin:verticadba /opt/vertica/config/admintools.conf
 }
 
-trap "shut_down" SIGKILL SIGTERM SIGHUP SIGINT
+function containsElement() {
+	local e match="$1"
+	shift
+	for e; do [[ "$e" == "$match" ]] && return 0; done
+	return 1
+}
+
+trap "shut_down" SIGTERM SIGHUP SIGINT
 
 
 echo 'Starting up'
@@ -67,5 +74,11 @@ fi
 echo "Vertica is now running"
 
 while [ "${STOP_LOOP}" == "false" ]; do
-  sleep 1
+	sleep 5
+	down_db=$(su - dbadmin -c "/opt/vertica/bin/admintools -t db_status -s DOWN")
+	IFS=', ' read -r -a db_array <<< "$down_db"
+	if containsElement "$DATABASE_NAME" "${db_array[@]}"; then
+		echo "database $DATABASE_NAME is already stop, exit"
+		shut_down
+	fi
 done
