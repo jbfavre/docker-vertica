@@ -5,18 +5,19 @@ STOP_LOOP="false"
 
 # if DATABASE_NAME is not provided use default one: "docker"
 export DATABASE_NAME="${DATABASE_NAME:-docker}"
+export DATABASE_TIMEOUT="${DATABASE_TIMEOUT:-300}"
 # if DATABASE_PASSWORD is provided, use it as DB password, otherwise empty password
 if [ -n "$DATABASE_PASSWORD" ]; then export DBPW="-p $DATABASE_PASSWORD" VSQLPW="-w $DATABASE_PASSWORD"; else export DBPW="" VSQLPW=""; fi
 
 # Vertica should be shut down properly
 function shut_down() {
-  echo "Shutting Down"
-  vertica_proper_shutdown
-  echo 'Saving configuration'
-  mkdir -p ${VERTICADATA}/config
-  /bin/cp /opt/vertica/config/admintools.conf ${VERTICADATA}/config/admintools.conf
-  echo 'Stopping loop'
-  STOP_LOOP="true"
+	echo "Shutting Down"
+	vertica_proper_shutdown
+	echo 'Saving configuration'
+	mkdir -p "${VERTICADATA}"/config
+	/bin/cp -vf /opt/vertica/config/admintools.conf "${VERTICADATA}"/config/admintools.conf
+	echo 'Stopping loop'
+	STOP_LOOP="true"
 }
 
 function vertica_proper_shutdown() {
