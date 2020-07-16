@@ -38,6 +38,8 @@ Or with custom database name (default is "docker") or database password (default
 
     docker run -p 5433:5433 -e DATABASE_NAME='notdocker' -e DATABASE_PASSWORD='foo123' jbfavre/vertica:9.2.0-7_debian-8
 
+Default user is dbadmin
+
 ## How to build from Dockerfile
 
 You have to get relevant Vertica package from my.vertica.com (registration mandatory).  
